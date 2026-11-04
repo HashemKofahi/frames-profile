@@ -1,0 +1,8 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Owner dashboard</title>
+<style>body{font:15px Arial;background:#f5f4f0;color:#222;max-width:760px;margin:50px auto;padding:20px}input,button{padding:12px;font-size:15px}input{width:65%;max-width:400px}button{cursor:pointer}table{width:100%;border-collapse:collapse;margin-top:25px}td,th{text-align:left;padding:12px;border-bottom:1px solid #ddd}small{color:#777}</style></head><body>
+<h1>Owner dashboard</h1><p><small>Only usernames voluntarily submitted through the consent checkbox appear here.</small></p>
+<input id="pw" type="password" placeholder="Admin password"><button id="load">Load entries</button><p id="msg"></p><table><thead><tr><th>Instagram username</th><th>Submitted</th></tr></thead><tbody id="rows"></tbody></table>
+<script>
+document.querySelector('#load').onclick=async()=>{const msg=document.querySelector('#msg'),rows=document.querySelector('#rows');msg.textContent='Loading…';rows.innerHTML='';
+try{const r=await fetch('/api/admin',{headers:{Authorization:'Bearer '+document.querySelector('#pw').value}});const d=await r.json();if(!r.ok)throw new Error(d.error||'Failed');d.forEach(x=>{const tr=document.createElement('tr'),a=document.createElement('td'),b=document.createElement('td');a.textContent='@'+x.instagram_username;b.textContent=new Date(x.created_at).toLocaleString();tr.append(a,b);rows.append(tr)});msg.textContent=d.length+' entries';}catch(e){msg.textContent=e.message}};
+</script></body></html>
