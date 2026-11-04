@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Frames — Creative Profile</title>
+<style>
+:root{--ink:#20201e;--muted:#77756f;--paper:#f6f5f1;--line:#deddd6}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 Arial,sans-serif}
+header{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(6vw,22px);letter-spacing:.16em}
+.brand{font-size:20px;font-weight:700}.tag{font-size:10px;letter-spacing:.13em;color:var(--muted)}
+main{max-width:920px;margin:55px auto;padding:0 22px}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:42px;align-items:center}
+.photo{height:440px;background:linear-gradient(160deg,#b9c6c2,#e8d6bd 55%,#8b9b96);position:relative;overflow:hidden}
+.photo:before{content:"";position:absolute;inset:48% -10% -15%;background:linear-gradient(170deg,#788f8d,#344c50);clip-path:polygon(0 35%,22% 0,43% 27%,65% 5%,100% 38%,100% 100%,0 100%)}
+.photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0002,transparent 45%)}
+.copy h1{font:normal clamp(36px,5vw,58px)/1.05 Georgia,serif;margin:12px 0 18px}.copy p{color:var(--muted);max-width:340px}
+form{margin-top:28px}label{display:block;font-size:12px;margin-bottom:8px}input{width:100%;padding:14px;border:1px solid var(--line);background:#fff;font-size:15px}
+.consent{display:flex;gap:9px;align-items:flex-start;margin:14px 0;color:var(--muted);font-size:12px}.consent input{width:auto;margin-top:3px}
+button{border:0;background:var(--ink);color:white;padding:15px 20px;width:100%;letter-spacing:.08em;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:11px;color:var(--muted);margin-top:15px}.status{font-size:13px;margin-top:12px;min-height:20px}
+footer{text-align:center;border-top:1px solid var(--line);margin-top:60px;padding:25px;color:var(--muted);font-size:11px}
+@media(max-width:680px){main{margin:28px auto}.hero{grid-template-columns:1fr;gap:25px}.photo{height:280px}.copy h1{font-size:42px}}
+</style>
+</head>
+<body>
+<header><div class="brand">FRAMES<span class="tag"> / CREATIVE JOURNAL</span></div><div class="tag">A LITTLE SPACE FOR IMAGES</div></header>
+<main><section class="hero">
+<div class="photo" role="img" aria-label="Abstract coastal landscape artwork"></div>
+<div class="copy"><div class="tag">PERSONAL CREATIVE SPACE</div><h1>Moments,<br>collected.</h1>
+<p>A small collection of visual inspiration. Leave your Instagram handle if you'd like the page owner to know you stopped by.</p>
+<form id="visitForm">
+<label for="username">INSTAGRAM USERNAME</label>
+<input id="username" name="username" maxlength="30" autocomplete="off" placeholder="@yourusername" required>
+<label class="consent"><input type="checkbox" id="consent" required><span>I agree to share this Instagram username with the page owner. No password or Instagram login details are requested.</span></label>
+<button id="submit" type="submit">SEND USERNAME</button><div class="status" id="status" aria-live="polite"></div>
+</form>
+<div class="note">Independent demo page. Not affiliated with Instagram or VSCO.</div>
+</div></section></main>
+<footer>FRAMES — CREATIVE JOURNAL</footer>
+<script>
+const form=document.querySelector('#visitForm'), statusEl=document.querySelector('#status'), btn=document.querySelector('#submit');
+form.addEventListener('submit',async e=>{
+ e.preventDefault(); if(!document.querySelector('#consent').checked)return;
+ btn.disabled=true;statusEl.textContent='Sending…';
+ try{
+  const r=await fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:document.querySelector('#username').value,consent:true})});
+  const d=await r.json(); if(!r.ok)throw new Error(d.error||'Could not submit');
+  statusEl.textContent='Thanks — your username was shared with the page owner.';form.reset();
+ }catch(err){statusEl.textContent=err.message;}
+ finally{btn.disabled=false;}
+});
+</script>
+</body></html>
